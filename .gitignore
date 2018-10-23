@@ -1,0 +1,12 @@
+.idea/
+
+# Dependency directory
+node_modules
+
+# Generated files
+build
+dist
+coverage
+coverage.json
+coverageEnv
+allFiredEvents
