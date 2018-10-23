@@ -34,32 +34,30 @@ contract PeaceRelay {
     bytes32   receiptRoot;   // 5
   }
 
-
-
   event TxRootEvent(bytes32 txRoot);
   event SubmitBlock(uint256 blockHash, address submitter);
 
-  function PeaceRelay(uint256 blockNumber) {
+  constructor(uint256 blockNumber) public {
     genesisBlock = blockNumber;
     highestBlock = blockNumber;
     authorized[msg.sender] = true;
     owner = msg.sender;
   }
 
-  function authorize(address user) onlyOwner {
+  function authorize(address user) public onlyOwner {
     authorized[user] = true;
   }
 
-  function deAuthorize(address user) onlyOwner {
+  function deAuthorize(address user) public onlyOwner {
     authorized[user] = false;
   }
 
-  function resetGenesisBlock(uint256 blockNumber) onlyAuthorized {
+  function resetGenesisBlock(uint256 blockNumber) public onlyAuthorized {
     genesisBlock = blockNumber;
     highestBlock = blockNumber;
   }
 
-  function submitBlock(uint256 blockHash, bytes rlpHeader) onlyAuthorized {
+  function submitBlock(uint256 blockHash, bytes rlpHeader) public onlyAuthorized {
     BlockHeader memory header = parseBlockHeader(rlpHeader);
     uint256 blockNumber = getBlockNumber(rlpHeader);
     if (blockNumber > highestBlock) {
@@ -67,30 +65,30 @@ contract PeaceRelay {
     }
     blocks[blockHash] = header;
     // There is at least one orphan
-    SubmitBlock(blockHash, msg.sender);
+    emit SubmitBlock(blockHash, msg.sender);
   }
 
-  function checkTxProof(bytes value, uint256 blockHash, bytes path, bytes parentNodes) constant returns (bool) {
+  function checkTxProof(bytes value, uint256 blockHash, bytes path, bytes parentNodes) public returns (bool) {
     // add fee for checking transaction
-    bytes32 txRoot = blocks[blockHash].txRoot;
-    TxRootEvent(txRoot);
-    return trieValue(value, path, parentNodes, txRoot);
+    bytes32 _txRoot = blocks[blockHash].txRoot;
+    emit TxRootEvent(_txRoot);
+    return trieValue(value, path, parentNodes, _txRoot);
   }
 
   // TODO: test
-  function checkStateProof(bytes value, uint256 blockHash, bytes path, bytes parentNodes) constant returns (bool) {
+  function checkStateProof(bytes value, uint256 blockHash, bytes path, bytes parentNodes) public view returns (bool) {
     bytes32 stateRoot = blocks[blockHash].stateRoot;
     return trieValue(value, path, parentNodes, stateRoot);
   }
 
   // TODO: test
-  function checkReceiptProof(bytes value, uint256 blockHash, bytes path, bytes parentNodes) constant returns (bool) {
+  function checkReceiptProof(bytes value, uint256 blockHash, bytes path, bytes parentNodes) public view returns (bool) {
     bytes32 receiptRoot = blocks[blockHash].receiptRoot;
     return trieValue(value, path, parentNodes, receiptRoot);
   }
 
   // parse block header
-  function parseBlockHeader(bytes rlpHeader) constant internal returns (BlockHeader) {
+  function parseBlockHeader(bytes rlpHeader) internal pure returns (BlockHeader) {
     BlockHeader memory header;
     var it = rlpHeader.toRLPItem().iterator();
 
@@ -112,24 +110,24 @@ contract PeaceRelay {
     return header;
   }
 
-  function getBlockNumber(bytes rlpHeader) constant internal returns (uint blockNumber) {
+  function getBlockNumber(bytes rlpHeader) internal pure returns (uint blockNumber) {
     RLP.RLPItem[] memory rlpH = RLP.toList(RLP.toRLPItem(rlpHeader));
     blockNumber = RLP.toUint(rlpH[8]);
   }
 
-  function getStateRoot(uint256 blockHash) constant returns (bytes32) {
+  function getStateRoot(uint256 blockHash) public view returns (bytes32) {
     return blocks[blockHash].stateRoot;
   }
 
-  function getTxRoot(uint256 blockHash) constant returns (bytes32) {
+  function getTxRoot(uint256 blockHash) public view returns (bytes32) {
     return blocks[blockHash].txRoot;
   }
 
-  function getReceiptRoot(uint256 blockHash) constant returns (bytes32) {
+  function getReceiptRoot(uint256 blockHash) public view returns (bytes32) {
     return blocks[blockHash].receiptRoot;
   }
 
-  function trieValue(bytes value, bytes encodedPath, bytes parentNodes, bytes32 root) constant internal returns (bool) {
+  function trieValue(bytes value, bytes encodedPath, bytes parentNodes, bytes32 root) internal pure returns (bool) {
     return MerklePatriciaProof.verify(value, encodedPath, parentNodes, root);
   }
 

@@ -16,7 +16,7 @@ library MerklePatriciaProof {
    * @param root The root hash of the trie.
    * @return The boolean validity of the proof.
    */
-  function verify(bytes value, bytes encodedPath, bytes rlpParentNodes, bytes32 root) internal constant returns (bool) {
+  function verify(bytes value, bytes encodedPath, bytes rlpParentNodes, bytes32 root) internal pure returns (bool) {
     RLP.RLPItem memory item = RLP.toRLPItem(rlpParentNodes);
     RLP.RLPItem[] memory parentNodes = RLP.toList(item);
 
@@ -71,7 +71,7 @@ library MerklePatriciaProof {
     }
   }
 
-  function _nibblesToTraverse(bytes encodedPartialPath, bytes path, uint pathPtr) private constant returns (uint) {
+  function _nibblesToTraverse(bytes encodedPartialPath, bytes path, uint pathPtr) private pure returns (uint) {
     uint len;
     // encodedPartialPath has elements that are each two hex characters (1 byte), but partialPath
     // and slicedPath have elements that are each one hex character (1 nibble)
@@ -94,7 +94,7 @@ library MerklePatriciaProof {
   }
 
   // bytes b must be hp encoded
-  function _getNibbleArray(bytes b) private constant returns (bytes) {
+  function _getNibbleArray(bytes b) private pure returns (bytes) {
     bytes memory nibbles;
     if (b.length>0) {
       uint8 offset;
@@ -122,7 +122,7 @@ library MerklePatriciaProof {
   *@param Bytes String
   *@return ByteString[N]
   */
-  function _getNthNibbleOfBytes(uint n, bytes str) private constant returns (byte) {
+  function _getNthNibbleOfBytes(uint n, bytes str) private pure returns (byte) {
     return byte(n%2==0 ? uint8(str[n/2])/0x10 : uint8(str[n/2])%0x10);
   }
 }
