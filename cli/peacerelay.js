@@ -4,7 +4,7 @@ const rlp = require('rlp')
 const EthereumBlock = require('ethereumjs-block/from-rpc')
 const commandLineArgs = require('command-line-args')
 
-const peacerelayABI = require('./peacerelay.json')
+const peaceRelayABI = require('./peacerelay.json')
 const submitBlock = require('./signing');
 const settings = require("./settings.json");
 
@@ -12,7 +12,7 @@ const settings = require("./settings.json");
 const optionDefinitions = [
   { name: 'from', alias: 'f', type: String },
   { name: 'to', alias: 't', type: String },
-  {name: 'start', type: Number},
+  { name: 'start', type: Number },
   { name: 'privateKey', alias: 'p', type: String }
 ]
 
@@ -26,13 +26,22 @@ to.privateKey = settings[options.to].relayerPrivateKey;
 const From = new Web3(new Web3.providers.HttpProvider(from));
 const To = new Web3(new Web3.providers.HttpProvider(to.url));
 
-const PeaceRelayTo = new To.eth.Contract(peacerelayABI);
-PeaceRelayTo.options.address = to.peaceRelayAddress;
+const PeaceRelayTo = new To.eth.Contract(peaceRelayABI, to.peaceRelayAddress);
 
 var currentBlockNumber = options.start;
 console.log('startingBlockNumber:' + currentBlockNumber);
 
-postFrom();
+
+postFromWarmStart()
+
+
+
+async function postFromWarmStart() {
+  var highestBlockNumberOnRelay = await PeaceRelayTo.methods.highestBlock().call();
+  console.log('highestBlockNumber seen on Relay: ' + highestBlockNumberOnRelay);
+  currentBlockNumber = Math.max(highestBlockNumberOnRelay, currentBlockNumber);
+  postFrom();
+}
 
 /**
  * @name postForm
