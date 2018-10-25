@@ -1,0 +1,14 @@
+version: '3.2'
+
+services:
+  relay:
+    build: .
+    environment:
+      NODE_ENV: production
+    environment:
+      MNEMONIC: ${MNEMONIC}
+      RPC_ENDPOINT: ${RPC_ENDPOINT}
+      NETWORK_ID: ${NETWORK_ID}
+    volumes:
+      - ./cli/settings.json:/usr/src/app/cli/settings.json:ro
+    command: node cli/peacerelay.js --from=staging.rewardprotocol.com --to=staging.rewardprotocol.com --start=0
