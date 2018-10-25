@@ -1,5 +1,6 @@
 .idea/
 .env
+/cli/settings.json
 
 # Dependency directory
 node_modules
