@@ -7,7 +7,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build && cp manifest.json build/ && sw-precache --root='build/' --static-file-globs='build/**/!(*map*)'",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "truffle": "truffle"
   },
   "keywords": [
     "peacerelay",
@@ -24,9 +25,7 @@
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
     "react-scripts": "0.8.4",
-    "sw-precache": "^4.2.3",
-    "truffle": "^4.1.14",
-    "truffle-hdwallet-provider": "^0.0.6"
+    "sw-precache": "^4.2.3"
   },
   "dependencies": {
     "bignumber.js": "^6.0.0",
@@ -51,6 +50,8 @@
     "rlp": "^2.0.0",
     "secp256k1": "^3.3.1",
     "superagent": "^3.8.2",
+    "truffle": "^4.1.14",
+    "truffle-hdwallet-provider": "^0.0.6",
     "web3": "^1.0.0-beta.36"
   },
   "homepage": "./"
