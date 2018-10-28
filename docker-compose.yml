@@ -5,7 +5,6 @@ services:
     build: .
     environment:
       NODE_ENV: production
-    environment:
       MNEMONIC: ${MNEMONIC}
       RPC_ENDPOINT: ${RPC_ENDPOINT}
       NETWORK_ID: ${NETWORK_ID}
